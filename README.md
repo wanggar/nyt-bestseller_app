@@ -1,2 +1,2 @@
-# nyt-bestseller_app
-nyt-bestseller_app
+# nyt-bestseller-app
+nyt-bestseller-app
