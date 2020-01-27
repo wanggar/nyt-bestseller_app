@@ -1,0 +1,25 @@
+{% extends 'api/base.html' %}
+{% block content %}
+    <form action="{% url 'api:post_comment' book_title bullet_item_id %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button class="btn waves-effect waves-light" type="submit" name="action"> Comment</button>
+    </form><br><br><br><br>
+
+    {% if bullet_comments %}
+        <ul class="collection with-header">
+            <li class="collection-header"><h5>User Comments</h5></li>
+
+            {% for comment in bullet_comments %}
+                <li class="collection-item">
+                    <div>
+                        {{ comment.content }} -- post by {{ comment.commenter }}
+                        <a href="#!" class="secondary-content">
+                            <i class="material-icons">send </i>
+                        </a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

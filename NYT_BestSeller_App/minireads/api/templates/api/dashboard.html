@@ -1,0 +1,23 @@
+{% extends 'api/base.html' %}
+{% block content %}
+    <h3> Reader Community</h3>
+    {% if bulletItems %}
+        {% for item in bulletItems %}
+            <div class="col s3 m6">
+                <div class="card blue-grey darken-1">
+                    <div class="card-content white-text">
+                        <span class="card-title">{{ item.book_title }}</span>
+                        <p>{{ item.description }}</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="{% url 'api:like' item.id %}"> <i class="material-icons">thumb_up</i></a><span
+                            style="margin-left:-17px;margin-right:15px;color:white">{{ item.likes }}</span>
+                        <a href="{% url 'api:comment' item.book_title item.id %}"><i class="material-icons">comment</i></a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>The community is empty and doomed. Share some contents to make it bloom!</p>
+    {% endif %}
+{% endblock %}

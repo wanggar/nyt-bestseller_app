@@ -1,0 +1,41 @@
+{% extends 'api/base.html' %}
+{% block content %}
+
+    <h3> Saved Items</h3>
+
+    {% if book_collections %}
+        {% for collection in book_collections %}
+            <div class="col s3">
+                <div class="card">
+                    <div class="card-image waves-effect waves-block waves-light">
+                        <img class="activator" height=300px
+                             src="https://s1.nyt.com/du/books/images/{{ collection.isbn }}.jpg">
+                    </div>
+                    <div class="card-content">
+                        <span id="mySpan"
+                              class="card-title activator grey-text text-darken-4">{{ collection.book_title }}
+                            <i class="material-icons right">more_vert</i>
+                        </span>
+                        <div class="progress">
+                            <div class="determinate" style="width: {{ collection.percentage }}%"></div>
+                            <div class="status-percent">{{ collection.percentage }}%</div>
+                        </div>
+                    </div>
+                    <div class="card-reveal">
+                <span class="card-title grey-text text-darken-4">Reading Progress<i
+                        class="material-icons right">close</i></span>
+                        <p>Here is to update reader's reading status</p>
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            {{ form }}
+                            <input type="hidden" name="collection_id" value="{{ collection.id }}">
+                            <button class="btn waves-effect waves-light" type="submit" name="action"> update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+{% endblock %}

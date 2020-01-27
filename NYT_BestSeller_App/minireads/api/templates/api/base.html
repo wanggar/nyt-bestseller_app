@@ -1,0 +1,132 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>NYT Bestseller</title>
+    <meta name="description" content="The HTML5 Herald">
+    <meta name="author" content="SitePoint">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <style>
+        .row {
+            margin: 20px;
+        }
+
+        .reviewResults {
+            color: black;
+        }
+
+        .urlLink {
+            color: black;
+        }
+
+        .model {
+            color: black;
+        }
+
+        .recommendedList {
+            color: black;
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+<ul id="dropdown1" class="dropdown-content">
+    <li><a href="{% url 'api:dashboard' %}">Dashboard</a></li>
+    <li><a href="{% url 'api:collection' %}">Collection</a></li>
+</ul>
+
+<nav>
+    <div class="nav-wrapper">
+        <a href="{% url 'api:index' %}" class="brand-logo"> NYT Bellsellers</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a><i class="material-icons modal-trigger" href="#reviewModal">search</i></a></li>
+            <li><a href="{% url 'api:index' %}">Fiction</a></li>
+            <li><a href="{% url 'api:humor' %}">Humor</a></li>
+            <li><a href="{% url 'api:education' %}">Education</a></li>
+            <li><a href="{% url 'api:culture' %}">Culture</a></li>
+            <li><a href="{% url 'api:family' %}">Family</a></li>
+            <li><a href="{% url 'api:non_fiction' %}">Non-Fiction</a></li>
+            {% if user.is_authenticated %}
+                <li><a class="dropdown-trigger" data-target="dropdown1"> User: {{ user.get_username }} </a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}?next={{ request.path }}">Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+
+    <div id="reviewModal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h3 style="color:black">Search</h3>
+            <div>
+                <input id="reviewSearch" type="text" name="searchBar"
+                       placeholder="Look up book views for a particular author">
+            </div>
+            <div class="recommendedList">
+                e.g. Malcolm GladWell, James Patterson, Agatha Christie, Michelle Obama, David Baldacci
+            </div>
+            <div class="reviewResults">
+                <div class="query">
+                    <p class="bookTitle"></p>
+                    <a class="urlLink"></a>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+        </div>
+    </div>
+
+
+</nav>
+<div class="row">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<script>
+    $(document).ready(function () {
+        apikey = "E3KxNUozu1CAkdITkLh2KPO7otGq3vHu"
+        $("#reviewSearch").change(function () {
+            userInput = $("#reviewSearch").val();
+            $(".recommendedList").hide();
+            author = userInput.replace(/ /g, "+");
+            console.log(author);
+            url = "https://api.nytimes.com/svc/books/v3/reviews.json?author=" + author + "&api-key=" + apikey;
+            $.ajax({
+                method: "GET",
+                url: url,
+            }).done(function (data) {
+                $(".reviewResults").empty();
+                console.log(data);
+                $(".reviewResults").append("<h6>Book reviews for " + userInput + "</h6>");
+                if (data.results.length == 0) {
+                    $(".reviewResults").append("<h3> Sorry, no matched results...</h3>");
+                }
+                for (var i = 0; i < data.results.length; ++i) {
+                    $(".reviewResults").append("<div class = 'query'><p class = 'bookTitle'>" + "<a class = 'urlLink' href=" + data.results[0].url + ">" + data.results[i].book_title + "</a></p></div>");
+                }
+                ;
+            });
+            if ($("#reviewSearch").val() == "") {
+                $(".reviewResults").empty();
+                $(".recommendedList").show();
+            }
+        });
+        $(".dropdown-trigger").dropdown();
+        $('.modal').modal();
+        $('#textarea1').val('');
+        M.textareaAutoResize($('#textarea1'));
+    });
+</script>
+
+</body>
+</html>
